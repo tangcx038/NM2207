@@ -87,7 +87,7 @@ clean_waste_03_22$recycling_rate <- round(
 )
 
 # Display the cleaned data
-clean_waste_03_22
+head(clean_waste_03_22)
 ```
 
 
@@ -122,13 +122,17 @@ Learn how much Singapore is saving energy per years by recycling plastics, paper
 
 ## Introduction of Narrative 
 
-In the vibrant landscape of Singapore, a groundbreaking goal is set to transform the nation into a zero-waste haven. However, a shadow looms over this aspiration as the government grapples with a surge in waste disposal over the past four decades. The alarm bells ring louder with the realization that Semakau Landfill, the primary waste destination, could reach its limit by 2035. Singaporeans are urged to confront this pressing issue, detailed in the (https://www.towardszerowaste.gov.sg/zero-waste-masterplan/#:~:text=The amount of waste disposed,plants or landfills in Singapore.).
+In the heart of Singapore's bustling landscape, a groundbreaking initiative aims to turn the tide on the nation's mounting waste crisis. With the looming threat of Semakau Landfill reaching its limit by 2035 and a scarcity of land for new waste facilities, the urgency to address this issue has never been more apparent.
 
-Adding to the challenge, the city-state faces a shortage of land to construct new waste management facilities, amplifying the urgency of the situation. A unique strategy emerges to inspire citizens through the revelation of the energy saved annually through combined recycling efforts.
+As the nation confronts this pressing challenge, a unique strategy unfolds—one that seeks to inspire citizens by revealing the potential energy savings derived from combined recycling efforts. The journey begins with a meticulous project of data cleansing and preparation, focusing on the Singapore NEA Energy Savings dataset, which sheds light on total garbage collection and recycling rates. However, the complexity deepens with the diversity in material names from various sources.
 
-Embarking on a transformative journey, a project unfolds—data cleansing and preparation for analysis. The Singapore NEA Energy Savings dataset takes center stage, providing insights into total garbage collection and recycling rates. The diversity in material names, gathered from various sources, adds a layer of complexity.
+To bring the narrative up-to-date, the latest developments are seamlessly integrated, incorporating the 2022 data from waste statistics and overall recycling provided by the National Environment Agency. This ensures a comprehensive and current statistical analysis as the nation strives for a zero-waste future.
 
-To weave in the latest developments, the narrative integrates the 2022 data from waste statistics and overall recycling directly from the National Environment Agency's website (https://www.nea.gov.sg/our-services/waste-management/waste-statistics-and-overall-recycling). This inclusion ensures a comprehensive and up-to-date statistical analysis.
+The quest for understanding extends beyond borders, drawing insights from Greentumble to gauge the energy production potential of recycling efforts. The spotlight narrows onto five key waste types—plastics, paper, glass, ferrous, and non-ferrous metals—forming the cornerstone for calculating annual energy savings from 2003 to 2022. The hope is to propel Singapore toward a future where waste becomes not a problem but a source of renewed energy.
 
-The quest for understanding extends further, exploring the key information from Greentumble (https://greentumble.com/how-does-recycling-save-energy/) to gauge the potential energy production from recycling efforts. The focus narrows to five waste types—plastics, paper, glass, ferrous, and non-ferrous metals—as the cornerstone for calculating energy saved annually from 2003 to 2022 in hope to propel Singapore towards a future where waste is not a problem but a source of renewed energy.
+Amidst this environmental pursuit, the narrative weaves in elements of Singapore's unique relationship with food—a nation touted as a food paradise. The complexities of food security and waste management come to the forefront, challenging the conventional notion of waste. The thesis proposes a transformative approach to food waste management by harnessing it as a resource, exploring alternative architectural typologies for decentralized food waste-to-energy production in local neighborhoods.
+
+This proposition not only aims to support closed-loop food systems but also challenges societal perceptions of "waste". This project reflects a holistic inquiry into the intricate relationships between food waste, technology, environment, culture, and society. It calls for a rethink of current waste management practices, emphasizing the potential of waste as a resource that can be repurposed, recycled, and given a second life.
+
+In a city where waste is often out of sight, this narrative brings it to the forefront, proclaiming that not recycling waste is a missed opportunity. With an insatiable appetite for consumption, Singapore must take action to transform waste into a valuable resource, creating a sustainable future where the city's vibrancy is not overshadowed by the looming shadow of excess waste.
 

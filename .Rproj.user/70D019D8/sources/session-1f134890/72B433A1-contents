@@ -1,0 +1,344 @@
+---
+title: "Resourceful waste!"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(highcharter)
+library(gt)
+library(htmltools)
+library(viridis)
+library(maps)
+library(sf)
+library(shiny)
+```
+
+```{r}
+## Libraries 
+library(tidyverse)
+library(maps)
+library(sf)
+library(shiny)
+
+
+createInteractiveMap <- function(data_file, map_resolution = "world") {
+  library(ggplot2)
+  library(dplyr)
+  library(plotly)
+
+  # Import the data with coordinates
+  world_map <- map_data(map_resolution)
+  accesstonet <- read.csv(data_file)
+  map_data <- accesstonet %>% rename(region = country)
+
+  map <- left_join(world_map, map_data, by = "region")
+
+  # Create the ggplot object
+  gg <- ggplot(map, aes(long, lat, group = group, text = paste("Country: ", region, "<br>Annual Kg per Capita: ", FoodWaste2021kgcapitayear))) +
+    geom_polygon(aes(fill = FoodWaste2021kgcapitayear), color = "white", size = 0.03) +
+    scale_fill_gradient(low = "lightgreen", high = "darkgreen") +
+    theme_minimal()
+
+  # Convert ggplot to plotly
+  map_plotly <- ggplotly(gg, tooltip = "text")
+
+  # Display the interactive map
+  return(map_plotly)
+}
+
+## Libraries 
+library(tidyverse)
+library(maps)
+library(sf)
+library(plotly)
+
+createInteractiveMap <- function(data_file, map_resolution = "world") {
+  # Import the data with coordinates
+  world_map <- map_data(map_resolution)
+  accesstonet <- read.csv(data_file)
+  map_data <- accesstonet %>% rename(region = country)
+
+  map <- left_join(world_map, map_data, by = "region")
+
+  # Create the ggplot object
+  gg <- ggplot(map, aes(long, lat, group = group, text = paste("Country: ", region, "<br>Annual Kg per Capita: ", FoodWaste2021kgcapitayear))) +
+    geom_polygon(aes(fill = FoodWaste2021kgcapitayear), color = "white", size = 0.03) +
+    scale_fill_gradient(low = "lightgreen", high = "darkgreen") +
+    theme_minimal()
+
+  # Convert ggplot to plotly with specified width and height
+  map_plotly <- ggplotly(gg, tooltip = "text", width = 1000, height = 600)
+
+  # Set scrollZoom to FALSE
+  map_plotly$x$layout$updatemenus <- list(list(type = "zoom",
+showactive = FALSE,
+buttons = list(list(args = list("zoomType", "zoomin"),
+label = "Zoom In",
+method = "relayout"),
+list(args = list("zoomType", "zoomout"),
+label = "Zoom Out",
+method = "relayout")),
+direction = "left",
+pad = list(r = 10, t = 87),
+showactive = FALSE,
+type = "buttons",
+x = 0.1,
+y = 1))
+
+  # Display the interactive map
+  return(map_plotly)
+}
+
+# Usage
+interactiveMap <- createInteractiveMap("food-waste-by-country-2023.csv")
+interactiveMap
+```
+
+
+-----------------------------------------------------------------------
+
+### Dataset
+
+```{r}
+# Libraries
+library (tidyverse)
+library (plotly)
+library (shiny)
+library(dplyr)
+
+# Reading the CSV files
+waste_03_22 <- read.csv('2003_2022_waste.csv')
+
+energy_stat <- read.csv('waste_energy_stat.csv')
+
+
+# Renaming columns and mutating the data to convert values from kilo-tonnes to tonnes
+clean_waste_03_22 <- waste_03_22 %>%
+  rename(
+    waste_type = "waste_type",
+    total_waste_generated_tonne = "total_generate_1k_tonnes",
+    total_waste_recycled_tonne = "total_recycled_1k_tonnes",
+    total_waste_not_recycled_tonne = "total_not_recycled_1k_tonnes",
+    year = "year"
+  ) %>%
+  mutate(
+    total_waste_generated_tonne = total_waste_generated_tonne * 1000,
+    total_waste_recycled_tonne = total_waste_recycled_tonne * 1000
+  )
+
+# Filtering waste_03_22 dataset for specific years and waste types
+wasteselected <- clean_waste_03_22 %>%
+  filter(year %in% 2003:2022,
+         waste_type %in% c("Plastics", "Ferrous Metals", "Non-Ferrous Metals", "Glass", "Food"))%>%
+  arrange(waste_type)
+
+  
+### Calculating and adding recycling rate into DataFrame for analysis.
+
+# Calculate recycling_rate and round to 2 decimal places
+clean_waste_03_22$recycling_rate <- round(
+  clean_waste_03_22$total_waste_recycled_tonne / clean_waste_03_22$total_waste_generated_tonne,2
+)
+
+### Calculating and adding wasting rate into DataFrame for analysis.
+
+# Calculate wasting_rate and round to 2 decimal places
+clean_waste_03_22$wasting_rate <- round(
+  1-clean_waste_03_22$recycling_rate,2
+)
+
+# Display the cleaned data
+head(clean_waste_03_22)
+```
+
+```{r}
+# Libraries
+library(tidyverse)
+library(shiny)
+library(plotly)
+
+# Reading the CSV files
+waste_03_22 <- read.csv('2003_2022_waste.csv')
+
+# Renaming columns and mutating the data to convert values from kilo-tonnes to tonnes
+clean_waste_03_22 <- waste_03_22 %>%
+  rename(
+    waste_type = "waste_type",
+    total_waste_generated_tonne = "total_generate_1k_tonnes",
+    total_waste_recycled_tonne = "total_recycled_1k_tonnes",
+    total_waste_not_recycled_tonne = "total_not_recycled_1k_tonnes",
+    year = "year"
+  ) %>%
+  mutate(
+    total_waste_generated_tonne = total_waste_generated_tonne * 1000,
+    total_waste_recycled_tonne = total_waste_recycled_tonne * 1000
+  )
+
+# Define UI for the Shiny app
+ui <- fluidPage(
+  titlePanel("Waste Visualization App"),
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("material", "Choose Material:", 
+                  choices = unique(clean_waste_03_22$waste_type),
+                  selected = "Plastics")
+    ),
+    mainPanel(
+      plotlyOutput("waste_plot")
+    )
+  )
+)
+
+# Define server logic for the Shiny app
+server <- function(input, output) {
+  
+  # Filter data based on selected material
+  selected_data <- reactive({
+    clean_waste_03_22 %>%
+      filter(waste_type == input$material)
+  })
+  
+  # Render the plot
+  output$waste_plot <- renderPlotly({
+    gg <- ggplot(selected_data(), aes(x = year)) +
+      geom_line(aes(y = total_waste_generated_tonne, color = "Waste Generated"), size = 1) +
+      geom_line(aes(y = total_waste_recycled_tonne, color = "Waste Recycled"), size = 1) +
+      geom_line(aes(y = total_waste_not_recycled_tonne, color = "Waste Not Recycled"), size = 1) +
+      labs(title = paste("Waste Over Years -", input$material),
+           x = "Year", y = "Tonnes") +
+      theme_minimal()
+    
+    ggplotly(gg, tooltip = "text")
+  })
+}
+
+# Run the Shiny app
+shinyApp(ui, server)
+```
+
+#intend to add shiny to allow user to chose the material and then the graph x axis will be the year and y axis will be waste generated, waste recycled and waste not recycled. -> to be able to see the number when u hover over it.
+
+
+#another shiny interaction to see the recycling rate for each material. x-axis: year; y axis: rate (interactive scatter plot)-> to be able to see the number when u hover over it.
+
+#Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+# Colors
+custom_colors <- viridis::mako(n=30)
+
+# Grouping by material and summarizing total waste and recycled
+summary_df <- clean_waste_03_22 %>%
+  group_by(waste_type) %>%
+  summarise(
+    total_waste_generated = sum(total_waste_generated_tonne),
+    total_waste_recycled = sum(total_waste_recycled_tonne)
+  ) %>%
+  arrange(desc(total_waste_generated))
+
+# Adding relevant headings
+colnames(summary_df) <- c("Material", "Total Waste Generated (tonnes)", "Total Waste Recycled (tonnes)")
+
+# Displaying the summarized data
+summary_df
+
+# Adapted code for waste data
+clean_waste_03_22 %>%
+  group_by(waste_type) %>%
+  summarise(
+    total_waste_generated = sum(total_waste_generated_tonne),
+    total_waste_recycled = sum(total_waste_recycled_tonne)
+  ) %>%
+  arrange(desc(total_waste_generated)) %>%
+  head(15) 
+
+```
+
+### Chart C
+
+```{r}
+# Bar Plot for Waste Generated and Waste Recycled
+fig <- plot_ly(
+  x = clean_waste_03_22$year,
+  y = clean_waste_03_22$total_waste_generated_tonne,
+  type = "bar",
+  name = "Waste Generated"
+) %>%
+  add_trace(
+    x = clean_waste_03_22$year,
+    y = clean_waste_03_22$total_waste_recycled_tonne,
+    type = "bar",
+    name = "Waste Recycled"
+  ) %>%
+  add_trace(
+    x = clean_waste_03_22$year,
+    y = clean_waste_03_22$total_waste_not_recycled_tonne,
+    type = "bar",
+    name = "Waste Not Recycled"
+  )
+
+fig
+```
+
+### Chart D
+
+```{r}
+#use merge function: 
+total_data <- merge(clean_waste_03_22, energy_stat, by.x = "waste_type", by.y = "Material", all.x = TRUE)
+total_data$energy_saved <- total_data$total_waste_not_recycled_tonne * as.numeric(energy_stat$energy_saved)
+total_data$crude_oil_saved <- total_data$total_waste_not_recycled_tonne * as.numeric(energy_stat$crude_oil_saved)
+
+# Display the first few rows
+head(total_data)
+
+# Box plot of total_waste_not_recycled_tonne
+fig <- plot_ly(total_data, x = ~year, y = ~total_waste_recycled_tonne, type = "box")
+fig <- fig %>% layout(title = "Box Plot of Total Waste Not Recycled Tonne", yaxis = list(title = "Total Waste Not Recycled Tonne"))
+
+fig
+
+# Box plot of total_energy_saved
+fig2 <- plot_ly(total_data, x = ~year, y = ~energy_saved, type = "box")
+fig2 <- fig %>% layout(title = "Box Plot of Total Energy Saved", yaxis = list(title = "Total Energy Saved"))
+
+fig2
+```
+=======================================================================
+### Chart E
+
+#```{r}
+#scatter plot graph
+fig <- plot_ly(
+  data = total_data,
+  x = ~year,
+  y = ~energy_saved,
+  size = ~total_waste_generate_tonne,
+  color = ~material,
+  sizes = c(10, 60),
+  type = "scatter",
+  mode = "markers"
+)
+
+fig
+
+
+# Energy saved per year
+annual_energy_savings <- total_data %>%
+  group_by(year) %>%
+  summarize(energy_saved = sum(energy_saved))
+
+# Convert total_energy_saved to GWh
+annual_energy_savings$total_energy_saved <- round(annual_energy_savings$energy_saved / 1000000, 2)
+
+# Display the result
+tail(annual_energy_savings)
+```
