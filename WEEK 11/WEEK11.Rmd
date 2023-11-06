@@ -1,0 +1,281 @@
+---
+title: "Ching's Amazing Week-9 Webpage"
+author: "Tang Ching Xian"
+date: "2023-10-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+(Continuation) Week 11
+```{r, eval=T,echo=TRUE}
+# Create a  table
+topics <- c("Data Cleaning and Preparation", "Data Visualization (ggplot2) & Data             Wrangling (dplyr)", "Interactive Visualization (plotly) & Spatial Visualization (maps)")
+
+weeks <- c("Week 2-5", "Week 7-9", "Week 10-12")
+
+source <- c("Course", "Course", "Self-learnt")
+
+project_table <- data.frame(Topics = topics, Weeks = weeks, Source = source)
+
+# Print the table
+print(project_table)
+```
+#how much energy could be saved from recycling wasted food and materials
+```{r, eval=T,echo=TRUE}
+## Libraries 
+library(tidyverse)
+library(maps)
+library(sf)
+
+
+createInteractiveMap <- function(data_file, map_resolution = "world") {
+  library(ggplot2)
+  library(dplyr)
+  library(plotly)
+
+  # Import the data with coordinates
+  world_map <- map_data(map_resolution)
+  accesstonet <- read.csv(data_file)
+  map_data <- accesstonet %>% rename(region = country)
+
+  map <- left_join(world_map, map_data, by = "region")
+
+  # Create the ggplot object
+  gg <- ggplot(map, aes(long, lat, group = group, text = paste("Country: ", region, "<br>Annual Kg per Capita: ", FoodWaste2021kgcapitayear))) +
+    geom_polygon(aes(fill = FoodWaste2021kgcapitayear), color = "white", size = 0.03) +
+    scale_fill_gradient(low = "lightgreen", high = "darkgreen") +
+    theme_minimal()
+
+  # Convert ggplot to plotly
+  map_plotly <- ggplotly(gg, tooltip = "text")
+
+  # Display the interactive map
+  return(map_plotly)
+}
+
+# Usage
+interactiveMap <- createInteractiveMap("food-waste-by-country-2023.csv")
+interactiveMap
+
+#--- Error: attempt to use zero-length variable name
+
+```
+
+Zooming into my homeland, Singapore, a groundbreaking goal is set to transform the nation into a zero-waste haven. However, a shadow looms over this aspiration as the government grapples with a surge in waste disposal over the past four decades. The alarm bells ring louder with the realization that Semakau Landfill, the primary waste destination, could reach its limit by 2035. Singaporeans are urged to confront this pressing issue, detailed in the (https://www.towardszerowaste.gov.sg/zero-waste-masterplan/#:~:text=The amount of waste disposed,plants or landfills in Singapore.).
+
+Adding to the challenge, the city-state faces a shortage of land to construct new waste management facilities, amplifying the urgency of the situation. A unique strategy emerges to inspire citizens through the revelation of the energy saved annually through combined recycling efforts.
+
+Embarking on a transformative journey, a project unfolds—data cleansing and preparation for analysis. The Singapore NEA Energy Savings dataset takes center stage, providing insights into total garbage collection and recycling rates. The diversity in material names, gathered from various sources, adds a layer of complexity.
+
+To weave in the latest developments, the narrative integrates the 2022 data from waste statistics and overall recycling directly from the National Environment Agency's website (https://www.nea.gov.sg/our-services/waste-management/waste-statistics-and-overall-recycling). This inclusion ensures a comprehensive and up-to-date statistical analysis.
+
+The quest for understanding extends further, exploring the key information from Greentumble (https://greentumble.com/how-does-recycling-save-energy/) to gauge the potential energy production from recycling efforts. The focus narrows to five waste types—plastics, paper, glass, ferrous, and non-ferrous metals—as the cornerstone for calculating energy saved annually from 2003 to 2022 in hope to propel Singapore towards a future where waste is not a problem but a source of renewed energy.
+
+```{r, eval=T,echo=TRUE}
+# Libraries
+library (tidyverse)
+library (plotly)
+library (shiny)
+library(dplyr)
+
+# Reading the CSV files
+waste_03_22 <- read.csv('2003_2022_waste.csv')
+
+energy_stat <- read.csv('waste_energy_stat.csv')
+
+
+# Renaming columns and mutating the data to convert values from kilo-tonnes to tonnes
+clean_waste_03_22 <- waste_03_22 %>%
+  rename(
+    waste_type = "waste_type",
+    total_waste_generated_tonne = "total_generate_1k_tonnes",
+    total_waste_recycled_tonne = "total_recycled_1k_tonnes",
+    year = "year"
+  ) %>%
+  mutate(
+    total_waste_generated_tonne = total_waste_generated_tonne * 1000,
+    total_waste_recycled_tonne = total_waste_recycled_tonne * 1000
+  )
+```
+
+```{r, eval=T,echo=TRUE}
+
+# Filtering waste_03_22 dataset for specific years and waste types
+wasteselected <- clean_waste_03_22 %>%
+  filter(year %in% 2003:2022,
+         waste_type %in% c("Plastics", "Ferrous Metals", "Non-Ferrous Metals", "Glass", "Food"))%>%
+  arrange(waste_type)
+
+
+          #problem encountered: missing data for Food and Non-Ferrous Metals
+
+  
+### Calculating and adding recycling rate into DataFrame for analysis.
+
+# Calculate recycling_rate and round to 2 decimal places
+clean_waste_03_22$recycling_rate <- round(
+  clean_waste_03_22$total_waste_recycled_tonne / clean_waste_03_22$total_waste_generated_tonne,
+  2
+)
+
+### Calculating and adding wasting rate into DataFrame for analysis.
+
+# Calculate recycling_rate and round to 2 decimal places
+clean_waste_03_22$wasting_rate <- round(
+  clean_waste_03_22$total_waste_not_recycled_tonne / clean_waste_03_22$total_waste_generated_tonne,
+  2
+)
+
+# Display the cleaned data
+clean_waste_03_22
+```
+
+```{r, eval=T,echo=TRUE}
+# Bar Plot for Waste Generated and Waste Recycled
+fig <- plot_ly(
+  x = clean_waste_03_22$year,
+  y = clean_waste_03_22$total_waste_generated_tonne,
+  type = "bar",
+  name = "Waste Generated"
+) %>%
+  add_trace(
+    x = clean_waste_03_22$year,
+    y = clean_waste_03_22$total_waste_recycled_tonne,
+    type = "bar",
+    name = "Waste Recycled"
+  ) %>%
+  add_trace(
+    x = clean_waste_03_22$year,
+    y = clean_waste_03_22$total_waste_not_recycled_tonne,
+    type = "bar",
+    name = "Waste Not Recycled"
+  )
+
+fig
+
+#  problem encountered: bar graph not coming out!
+
+#  problem encountered: bargraph merged using original code, fixed with another code
+# Assuming you have a data frame named 'overall'
+#library(ggplot2)
+#library(plotly)
+
+# Create a ggplot object
+#gg <- ggplot(overall, aes(x = year)) +
+ # geom_bar(aes(y = total_waste_generated_tonne, fill = "Waste Generated"), stat = "identity") +
+#  geom_bar(aes(y = total_waste_recycled_tonne, fill = "Waste Recycled"), stat = "identity") +
+#  geom_bar(aes(y = total_waste_not_recycled_tonne, fill = "Waste Not Recycled"), stat = "identity") +
+ # labs(title = "Waste Generated, Waste Recycled and Waste not Recycled Over the Years",
+  #     y = "Tonne") +
+  #scale_fill_manual(values = c("Waste Generated" = "blue", "Waste Recycled" = "green")) +
+  #theme_minimal()
+
+# Convert ggplot to plotly
+#plotly_plot <- ggplotly(gg)
+
+# Display the interactive plot
+#plotly_plot
+
+#---
+  #add on the total energy saved
+#total_data$total_energy_saved <-  wasteselected$total_waste_generated_tonne * energy_saved
+```
+
+###Analysis from the bar chart
+There has been a steady increasing in recycling effort as we see an increase in waste generated. However we can see that 2018 to 2020 there is a dip in recycling effort and waste generated. It could be because of the covid-19 situation. We are unable to tell whether the bar graph tells us an increase or decrease in recycling effort therefore we will generate a graph using the recycling rate. 
+
+```{r, eval=T,echo=TRUE}
+
+#use merge function: 
+total_data <- merge(clean_waste_03_22, energy_stat, by.x = "waste_type", by.y = "Material", all.x = TRUE)
+total_data$energy_saved <- total_data$total_waste_not_recycled_tonne * as.numeric(energy_stat$energy_saved)
+total_data$crude_oil_saved <- total_data$total_waste_not_recycled_tonne * as.numeric(energy_stat$crude_oil_saved)
+
+# Display the first few rows
+head(total_data)
+```
+
+
+```{r, eval=T,echo=TRUE}
+# Box plot of total_waste_not_recycled_tonne
+fig <- plot_ly(total_data, x = ~year, y = ~total_waste_recycled_tonne, type = "box")
+fig <- fig %>% layout(title = "Box Plot of Total Waste Not Recycled Tonne", yaxis = list(title = "Total Waste Not Recycled Tonne"))
+
+fig
+
+# Box plot of total_energy_saved
+fig2 <- plot_ly(total_data, x = ~year, y = ~energy_saved, type = "box")
+fig2 <- fig %>% layout(title = "Box Plot of Total Energy Saved", yaxis = list(title = "Total Energy Saved"))
+
+fig2
+
+# Multilevel scatter plot
+#fig <- plot_ly(total_data, x = ~year, y = ~total_energy_saved, size = ~total_waste_recycled_tonne, color = ~waste_type,
+#               sizes = c(10, 60), marker = list(opacity = 0.5, line = list(width = 0.5, color = 'white')))
+#fig <- fig %>% layout(title = "Multilevel Scatter Plot of Total Energy Saved",
+#                      xaxis = list(title = "Year"),
+#                      yaxis = list(title = "Total Energy Saved"))
+
+#fig
+
+#scatter plot graph
+fig <- plot_ly(
+  data = total_data,
+  x = ~year,
+  y = ~energy_saved,
+  size = ~total_waste_generate_tonne,
+  color = ~Material,
+  sizes = c(10, 60),
+  type = "scatter",
+  mode = "markers"
+)
+
+fig
+
+
+# Energy saved per year
+annual_energy_savings <- total_data %>%
+  group_by(year) %>%
+  summarize(energy_saved = sum(energy_saved))
+
+# Convert total_energy_saved to GWh
+annual_energy_savings$total_energy_saved <- round(annual_energy_savings$energy_saved / 1000000, 2)
+
+# Display the result
+tail(annual_energy_savings)
+
+
+```
+#Problem Encounter 1
+```{r}
+knitr::include_graphics("problem1.png")
+```
+
+Overcome: by typing separate lines instead of just throwing both at the same time.
+
+#Problem Encounter 2
+```{r}
+knitr::include_graphics("problem2.png")
+```
+Overcome: by typing "waste_energy_stat.csv" instead of "waste_energy_stat(s).csv" --> careless typing
+
+#Problem Encounter 3
+```{r}
+knitr::include_graphics("problem3.png")
+```
+Overcome: Confirm column names mentioned in the 'rename' and 'mutate' function exist in the CSV. They are also case-sensitive, so make sure there are no typos.
+
+#Problem Encounter 4
+```{r}
+knitr::include_graphics("problem4.png")
+```
+
+
+
+
+
+
