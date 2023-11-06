@@ -37,10 +37,10 @@ createInteractiveMap <- function(data_file, map_resolution = "world") {
   accesstonet <- read.csv(data_file)
   map_data <- accesstonet %>% rename(region = country)
 
-  map <- left_join(world_map, map_data, by = "region")
+  map <- left_join(world_map, map_data, by = "Country")
 
   # Create the ggplot object
-  gg <- ggplot(map, aes(long, lat, group = group, text = paste("Country: ", region, "<br>Annual Kg per Capita: ", FoodWaste2021kgcapitayear))) +
+  gg <- ggplot(map, aes(long, lat, group = group, text = paste("Country: ", country, "<br>Annual Kg per Capita: ", FoodWaste2021kgcapitayear))) +
     geom_polygon(aes(fill = FoodWaste2021kgcapitayear), color = "white", size = 0.03) +
     scale_fill_gradient(low = "lightgreen", high = "darkgreen") +
     theme_minimal()
@@ -102,6 +102,67 @@ interactiveMap
 
 
 -----------------------------------------------------------------------
+```{r}
+# Libraries
+library(tidyverse)
+library(maps)
+library(sf)
+library(shiny)
+library(plotly)
+
+# Function to create the interactive map
+createInteractiveMap <- function(selected_country) {
+  # Import the data with coordinates
+  world_map <- map_data("world")
+  accesstonet <- read.csv("food-waste-by-country-2023.csv")
+  map_data <- accesstonet %>% rename(country = Country)
+
+  map <- left_join(world_map, map_data, by = "country")
+
+  # Create the ggplot object
+  gg <- ggplot(map, aes(long, lat, group = group, text = paste("Country: ", country, "<br>Annual Kg per Capita: ", FoodWaste2021kgcapitayear))) +
+    geom_polygon(aes(fill = FoodWaste2021kgcapitayear), color = "white", size = 0.03) +
+    scale_fill_gradient(low = "lightgreen", high = "darkgreen") +
+    theme_minimal()
+
+  # Convert ggplot to plotly
+  map_plotly <- ggplotly(gg, tooltip = "text")
+
+  # Set initial zoom to the selected country
+  if (!is.null(selected_country)) {
+    map_plotly$x$layout$geo$fitbounds <- "locations"
+    map_plotly$x$data[[1]]$locations <- selected_country
+  }
+
+  # Display the interactive map
+  return(map_plotly)
+}
+
+# Shiny app
+ui <- fluidPage(
+  selectInput("selected_country", "Select Country", choices = ""),
+  plotlyOutput("interactive_map")
+)
+
+server <- function(input, output, session) {
+  observe({
+    choices <- unique(read.csv("food-waste-by-country-2023.csv")$Country)
+    updateSelectInput(session, "selected_country", choices = choices)
+  })
+
+  # Update the map based on the selected country
+  output$interactive_map <- renderPlotly({
+    selected_country_data <- filter(read.csv("food-waste-by-country-2023.csv"), Country == input$selected_country)
+    map_plot <- createInteractiveMap(selected_country_data$country)
+    map_plot
+  })
+}
+
+shinyApp(ui, server)
+
+```
+
+#intend to able to zoom into country when choosing the country,default singapore
 
 ### Dataset
 
@@ -156,6 +217,7 @@ clean_waste_03_22$wasting_rate <- round(
 # Display the cleaned data
 head(clean_waste_03_22)
 ```
+
 
 ```{r}
 # Libraries
@@ -221,14 +283,91 @@ server <- function(input, output) {
 # Run the Shiny app
 shinyApp(ui, server)
 ```
+```{r}
+# Libraries
+library(tidyverse)
+library(shiny)
+library(plotly)
 
-#intend to add shiny to allow user to chose the material and then the graph x axis will be the year and y axis will be waste generated, waste recycled and waste not recycled. -> to be able to see the number when u hover over it.
+# Reading the CSV files
+waste_03_22 <- read.csv('2003_2022_waste.csv')
 
+# Renaming columns and mutating the data to convert values from kilo-tonnes to tonnes
+clean_waste_03_22 <- waste_03_22 %>%
+  rename(
+    waste_type = "waste_type",
+    total_waste_generated_tonne = "total_generate_1k_tonnes",
+    total_waste_recycled_tonne = "total_recycled_1k_tonnes",
+    total_waste_not_recycled_tonne = "total_not_recycled_1k_tonnes",
+    year = "year"
+  ) %>%
+  mutate(
+    total_waste_generated_tonne = total_waste_generated_tonne * 1000,
+    total_waste_recycled_tonne = total_waste_recycled_tonne * 1000
+  )
 
-#another shiny interaction to see the recycling rate for each material. x-axis: year; y axis: rate (interactive scatter plot)-> to be able to see the number when u hover over it.
+# Filtering waste_03_22 dataset for specific years and waste types
+wasteselected <- clean_waste_03_22 %>%
+  filter(year %in% 2003:2022,
+         waste_type %in% c("Plastics", "Ferrous Metals", "Non-Ferrous Metals", "Glass", "Food")) %>%
+  arrange(waste_type)
 
-#Column {data-width=350}
------------------------------------------------------------------------
+  
+### Calculating and adding recycling rate into DataFrame for analysis.
+
+# Calculate recycling_rate and round to 2 decimal places
+clean_waste_03_22$recycling_rate <- round(
+  clean_waste_03_22$total_waste_recycled_tonne / clean_waste_03_22$total_waste_generated_tonne, 2
+)
+
+### Calculating and adding wasting rate into DataFrame for analysis.
+
+# Calculate wasting_rate and round to 2 decimal places
+clean_waste_03_22$wasting_rate <- round(
+  1 - clean_waste_03_22$recycling_rate, 2
+)
+
+# Define UI for the Shiny app
+ui <- fluidPage(
+  titlePanel("Recycling and Wasting Rates Visualization App"),
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("material", "Choose Material:",
+                  choices = unique(clean_waste_03_22$waste_type),
+                  selected = "Plastics")
+    ),
+    mainPanel(
+      plotlyOutput("rate_plot")
+    )
+  )
+)
+
+# Define server logic for the Shiny app
+server <- function(input, output) {
+  
+  # Filter data based on selected material
+  selected_data <- reactive({
+    clean_waste_03_22 %>%
+      filter(waste_type == input$material)
+  })
+  
+  # Render the plot
+  output$rate_plot <- renderPlotly({
+    gg <- ggplot(selected_data(), aes(x = year)) +
+      geom_line(aes(y = recycling_rate, color = "Recycling Rate"), size = 1) +
+      geom_line(aes(y = wasting_rate, color = "Wasting Rate"), size = 1) +
+      labs(title = paste("Recycling and Wasting Rates Over Years -", input$material),
+           x = "Year", y = "Rate") +
+      theme_minimal()
+    
+    ggplotly(gg, tooltip = "text")
+  })
+}
+
+# Run the Shiny app
+shinyApp(ui, server)
+```
+
 
 ### Chart B
 
@@ -308,7 +447,7 @@ fig
 
 # Box plot of total_energy_saved
 fig2 <- plot_ly(total_data, x = ~year, y = ~energy_saved, type = "box")
-fig2 <- fig %>% layout(title = "Box Plot of Total Energy Saved", yaxis = list(title = "Total Energy Saved"))
+fig2 <- fig2 %>% layout(title = "Box Plot of Total Energy Saved", yaxis = list(title = "Total Energy Saved"))
 
 fig2
 ```
