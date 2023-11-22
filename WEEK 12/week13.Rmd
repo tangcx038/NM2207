@@ -42,136 +42,10 @@ library(sf)
 library(shiny)
 ```
 
-```{r}
-## Libraries 
-library(tidyverse)
-library(maps)
-library(sf)
-library(shiny)
-
-
-createInteractiveMap <- function(data_file, map_resolution = "world") {
-  library(ggplot2)
-  library(dplyr)
-  library(plotly)
-
-  # Import the data with coordinates
-  world_map <- map_data(map_resolution)
-  accesstonet <- read.csv(data_file)
-  map_data <- accesstonet %>% rename(region = country)
-
-  map <- left_join(world_map, map_data, by = "Country")
-
-  # Create the ggplot object
-  gg <- ggplot(map, aes(long, lat, group = group, text = paste("Country: ", country, "<br>Annual Kg per Capita: ", FoodWaste2021kgcapitayear))) +
-    geom_polygon(aes(fill = FoodWaste2021kgcapitayear), color = "white", size = 0.03) +
-    scale_fill_gradient(low = "lightgreen", high = "darkgreen") +
-    theme_minimal()
-
-  # Convert ggplot to plotly
-  map_plotly <- ggplotly(gg, tooltip = "text")
-
-  # Display the interactive map
-  return(map_plotly)
-}
-
-## Libraries 
-library(tidyverse)
-library(maps)
-library(sf)
-library(plotly)
-
-createInteractiveMap <- function(data_file, map_resolution = "world") {
-  # Import the data with coordinates
-  world_map <- map_data(map_resolution)
-  accesstonet <- read.csv(data_file)
-  map_data <- accesstonet %>% rename(region = country)
-
-  map <- left_join(world_map, map_data, by = "region")
-
-  # Create the ggplot object
-  gg <- ggplot(map, aes(long, lat, group = group, text = paste("Country: ", region, "<br>Annual Kg per Capita: ", FoodWaste2021kgcapitayear))) +
-    geom_polygon(aes(fill = FoodWaste2021kgcapitayear), color = "white", size = 0.03) +
-    scale_fill_gradient(low = "lightgreen", high = "darkgreen") +
-    theme_minimal()
-
-  # Convert ggplot to plotly with specified width and height
-  map_plotly <- ggplotly(gg, tooltip = "text", width = 1000, height = 600)
-
-  # Set scrollZoom to FALSE
-  map_plotly$x$layout$updatemenus <- list(list(type = "zoom",
-showactive = FALSE,
-buttons = list(list(args = list("zoomType", "zoomin"),
-label = "Zoom In",
-method = "relayout"),
-list(args = list("zoomType", "zoomout"),
-label = "Zoom Out",
-method = "relayout")),
-direction = "left",
-pad = list(r = 10, t = 87),
-showactive = FALSE,
-type = "buttons",
-x = 0.1,
-y = 1))
-
-  # Display the interactive map
-  return(map_plotly)
-}
-
-# Usage
-interactiveMap <- createInteractiveMap("food-waste-by-country-2023.csv")
-interactiveMap
+```{=html}
+<p style="text-align: center; font-weight: bold;">Let's explore the global landscape on a world map to understand the varying levels of food waste generated in each country.</p>
 ```
 
-```{r}
-# Load necessary libraries
-library(readr)
-library(ggplot2)
-
-# Read the CSV file
-FWD_UNEP <- read_csv("FWD.csv")
-
-# Function to calculate total estimates for each sector
-calculate_total <- function(data, column) {
-  return(sum(data[[column]]))
-}
-
-# Calculate total estimates for each sector
-total_household <- calculate_total(FWD_UNEP, "household_estimate_tpy")
-total_retail <- calculate_total(FWD_UNEP, "retail_estimate_tpy")
-total_food_service <- calculate_total(FWD_UNEP, "food_service_estimate_tpy")
-
-# Create a data frame with total estimates
-total_FW_by_sector <- data.frame(
-  category = c("Household", "Retail", "Food Service"),
-  value = c(total_household, total_retail, total_food_service),
-  color = c("#d62023", "#3fb619", "#8FB8FDff")
-)
-
-# Function to create bar and pie charts
-create_chart <- function(data, x, y, fill, title, x_label, y_label, coord_type = NULL) {
-  ggplot(data, aes_string(x = x, y = y, fill = fill)) +
-    geom_bar(stat = "identity", color = "black", width = 0.7) +
-    labs(title = title, x = x_label, y = y_label) +
-    scale_fill_manual(values = c("#d62023", "#3fb619", "#8FB8FDff")) +
-    if (!is.null(coord_type)) coord_type else NULL
-}
-
-# Create bar chart
-bar_chart <- create_chart(total_FW_by_sector, "category", "value", "category",
-                           "Total Food Waste by Sector", "Sector", "Total Food Waste (tpy)", NULL)
-
-# Create pie chart
-pie_chart <- create_chart(total_FW_by_sector, "", "value", "category",
-                           "Total Food Waste Distribution", "Sector", "Sector",
-                           coord_type = coord_polar("y"))
-
-# Display the charts
-print(bar_chart)
-print(pie_chart)
-```
-
------------------------------------------------------------------------
 ```{r}
 # Libraries
 library(tidyverse)
@@ -229,9 +103,179 @@ server <- function(input, output, session) {
 }
 
 shinyApp(ui, server)
-
-
 ```
+
+```{r}
+# Libraries
+library(tidyverse)
+library(maps)
+library(sf)
+library(shiny)
+library(plotly)
+
+# Function to create the interactive map
+createInteractiveMap <- function(selected_country) {
+  # Import the data with coordinates
+  world_map <- map_data("world")
+  accesstonet <- read.csv("food-waste-by-country-2023.csv")
+  map_data <- accesstonet %>% rename(country = Country)
+
+  map <- left_join(world_map, map_data, by = "country")
+
+  # Create the ggplot object
+  gg <- ggplot(map, aes(x = long, y = lat, group = group, text = paste("Country: ", country, "<br>Annual Kg per Capita: ", FoodWaste2021kgcapitayear))) +
+    geom_polygon(aes(fill = FoodWaste2021kgcapitayear), color = "white", size = 0.03) +
+    scale_fill_gradient(low = "lightgreen", high = "darkgreen") +
+    theme_minimal() +
+    theme(legend.position = "top")  # Set legend position to top
+
+  # Convert ggplot to plotly
+  map_plotly <- ggplotly(gg, tooltip = "text")
+
+  # Set initial zoom to the selected country
+  if (!is.null(selected_country)) {
+    map_plotly$x$layout$geo$fitbounds <- "locations"
+    map_plotly$x$data[[1]]$locations <- selected_country
+  }
+
+  # Display the interactive map
+  return(map_plotly)
+}
+
+# Shiny app
+ui <- fluidPage(
+  selectInput("selected_country", "Select Country", choices = ""),
+  plotlyOutput("interactive_map")
+)
+
+server <- function(input, output, session) {
+  observe({
+    choices <- unique(read.csv("food-waste-by-country-2023.csv")$Country)
+    updateSelectInput(session, "selected_country", choices = choices)
+  })
+
+  # Update the map based on the selected country
+  output$interactive_map <- renderPlotly({
+    selected_country_data <- filter(read.csv("food-waste-by-country-2023.csv"), country == input$selected_country)
+    map_plot <- createInteractiveMap(selected_country_data$country)
+    map_plot
+  })
+}
+
+shinyApp(ui, server)
+```
+
+```{r}
+
+library(shiny)
+library(shinydashboard)
+library(plotly)
+library(tidyverse)
+
+# Load your data
+fwd_data <- read.csv("FWD.csv")
+
+# UI
+ui <- dashboardPage(
+  dashboardHeader(title = "Interactive Boxplot and Heatmap"),
+  dashboardSidebar(),
+  dashboardBody(
+    box(title = "Boxplot by Stage", 
+        plotlyOutput("boxplot")),
+    
+    box(title = "Heatmap of Available Data", 
+        plotlyOutput("heatmap"))
+  )
+)
+
+# Server
+server <- function(input, output) {
+  
+  # Reactive subset of data for selected stages
+  selected_stages <- reactive({
+    fwd_data %>%
+      select("Stage", "Retail", "FoodServices", "Households")
+  })
+  
+  # Boxplot
+  output$boxplot <- renderPlotly({
+    plot_ly(selected_stages(), 
+            y = ~Retail, 
+            type = "box", 
+            name = "Retail") %>%
+      add_trace(y = ~FoodServices, name = "Food Services") %>%
+      add_trace(y = ~Households, name = "Households") %>%
+      layout(title = "Boxplot by Stage",
+             xaxis = list(title = "Stage"),
+             yaxis = list(title = "Value"))
+  })
+  
+  # Heatmap
+  output$heatmap <- renderPlotly({
+    plot_ly(z = ~selected_stages()$Retail,
+            x = ~selected_stages()$Stage,
+            y = ~c("Retail")) %>%
+      add_trace(z = ~selected_stages()$FoodServices, y = ~c("Food Services")) %>%
+      add_trace(z = ~selected_stages()$Households, y = ~c("Households")) %>%
+      layout(title = "Heatmap of Available Data",
+             xaxis = list(title = "Stage"),
+             yaxis = list(title = ""),
+             barmode = "stack")
+  })
+}
+
+# Run the Shiny app
+shinyApp(ui, server)
+```
+
+```{r}
+# Load necessary libraries
+library(readr)
+library(ggplot2)
+
+# Read the CSV file
+FWD_UNEP <- read_csv("FWD.csv")
+
+# Function to calculate total estimates for each sector
+calculate_total <- function(data, column) {
+  return(sum(data[[column]]))
+}
+
+# Calculate total estimates for each sector
+total_household <- calculate_total(FWD_UNEP, "household_estimate_tpy")
+total_retail <- calculate_total(FWD_UNEP, "retail_estimate_tpy")
+total_food_service <- calculate_total(FWD_UNEP, "food_service_estimate_tpy")
+
+# Create a data frame with total estimates
+total_FW_by_sector <- data.frame(
+  category = c("Household", "Retail", "Food Service"),
+  value = c(total_household, total_retail, total_food_service),
+  color = c("#d62023", "#3fb619", "#8FB8FDff")
+)
+
+# Function to create bar and pie charts
+create_chart <- function(data, x, y, fill, title, x_label, y_label, coord_type = NULL) {
+  ggplot(data, aes_string(x = x, y = y, fill = fill)) +
+    geom_bar(stat = "identity", color = "black", width = 0.7) +
+    labs(title = title, x = x_label, y = y_label) +
+    scale_fill_manual(values = c("#d62023", "#3fb619", "#8FB8FDff")) +
+    if (!is.null(coord_type)) coord_type else NULL
+}
+
+# Create bar chart
+bar_chart <- create_chart(total_FW_by_sector, "category", "value", "category",
+                           "Total Food Waste by Sector", "Sector", "Total Food Waste (tpy)", NULL)
+
+# Create pie chart
+pie_chart <- create_chart(total_FW_by_sector, "", "value", "category",
+                           "Total Food Waste Distribution", "Sector", "Sector",
+                           coord_type = coord_polar("y"))
+
+# Display the charts
+print(bar_chart)
+print(pie_chart)
+```
+The chart shows that households are the largest contributors to food waste, accounting for 61.1% of the total. This is followed by food services (26.2%) and retail establishments (12.7%).
 
 #intend to able to zoom into country when choosing the country,default singapore
 
@@ -471,6 +515,25 @@ clean_waste_03_22 %>%
   arrange(desc(total_waste_generated)) %>%
   head(15) 
 
+clean_waste_03_22 <- clean_waste_03_22 %>% 
+  pivot_longer(cols = disposed_tonnes:generated_tonnes,
+              names_to = "Sector",
+              values_to = "Tonnes") %>% 
+  mutate(Sector = case_when(
+    Sector == "disposed_tonnes" ~ "Disposed",
+    Sector == "generated_tonnes" ~ "Generated",
+    Sector == "recycled_tonnes" ~ "Recycled",
+    TRUE ~ as.character(Sector)
+  ))
+
+# Rename observation rows in the "Sector" column
+
+# Spline Plot
+clean_waste_03_22 %>% 
+  hchart('spline', hcaes(x = 'year', y = 'Tonnes', group = "Sector")) %>% 
+  hc_title(text = "Waste Statistics and Overall Recycling Table in Singapore")
+
+
 ```
 
 ### Chart C
@@ -558,3 +621,48 @@ annual_energy_savings$total_energy_saved <- round(annual_energy_savings$energy_s
 tail(annual_energy_savings)
 ```
 
+```{r}
+# References
+cat("
+<section id=\"references\" class=\"container mt-5\" style=\"width:100%;\">
+
+<div class=\"accordion\" id=\"accordionExample\">
+  <div class=\"accordion-item\">
+    <h2 class=\"accordion-header\" id=\"headingOne\">
+      <button class=\"accordion-button\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapseOne\" aria-expanded=\"f\" aria-controls=\"collapseOne\">
+        <h4>References</h4>
+      </button>
+    </h2>
+    <div id=\"collapseOne\" class=\"accordion-collapse collapse show\" aria-labelledby=\"headingOne\" data-bs-parent=\"#accordionExample\">
+      <div class=\"accordion-body\">
+        <p>Miquelis, P. (2019, january 25). The Truth About Food Waste in Singapore (and beyond). <a href=\"https://greenisthenewblack.com/the-truth-about-food-waste-in-singapore-and-beyond/\" target=\"_blank\">https://greenisthenewblack.com/the-truth-about-food-waste-in-singapore-and-beyond/</a></p> 
+        
+<p>United Nation Environment Programme. (2022, September 26). Why the global fight to tackle food waste has only just begun. <a href=\"https://www.unep.org/news-and-stories/story/why-global-fight-tackle-food-waste-has-only-just-begun\" target=\"_blank\">https://www.unep.org/news-and-stories/story/why-global-fight-tackle-food-waste-has-only-just-begun</a></p>
+
+<p>https://worldpopulationreview.com/country-rankings/food-waste-by-country</p>
+
+<p>Lee, H.W. (2022, January 3).Food Wastage Statistics in Singapore. <a href=\"https://www.bestinsingapore.co/food-wastage-statistics-singapore/\" target=\"_blank\">https://www.bestinsingapore.co/food-wastage-statistics-singapore/</a></p>
+
+<p>Food and Agriculture Organization. (n.d.). The State of Food and Agriculture - 2019. <a href=\"https://www.fao.org/state-of-food-agriculture/2019/en/\" target=\"_blank\">https://www.fao.org/state-of-food-agriculture/2019/en/</a></p>
+
+<p>Low, Y.J. (2019, August 6). Every Singaporean household throws away an average S$258 worth of food a year: Study. <a href=\"https://www.todayonline.com/singapore/every-singaporean-household-throws-away-average-s258-worth-food-year-study\" target=\"_blank\">https://www.todayonline.com/singapore/every-singaporean-household-throws-away-average-s258-worth-food-year</a></p>
+
+<p>Food and Agriculture Organization of the United Nations (FAO). 2011. Global food losses and food waste – Extent, causes and prevention. Rome. <a href=\"https://www.fao.org/3/mb060e/mb060e00.htm\" target=\"_blank\">https://www.fao.org/3/mb060e/mb060e00.htm</a></p>
+
+<p>National Environment Agency (NEA). (n.d.). Waste Statistics and Overall Recycling. <a href=\"https://www.nea.gov.sg/our-services/waste-management/waste-statistics-and-overall-recycling\" target=\"_blank\">https://www.nea.gov.sg/our-services/waste-management/waste-statistics-and-overall-recycling</a></p>
+
+<p>Towards Zero Waste. (n.d.). Food Waste. <a href=\"https://www.towardszerowaste.gov.sg/foodwaste/\" target=\"_blank\">https://www.towardszerowaste.gov.sg/foodwaste/</a></p>
+
+<p>O'Neill, A. (2023, February 2). Gross domestic product (GDP) per capita in selected global regions at current prices in 2021. <a href=\"https://www.statista.com/statistics/256413/gross-domestic-product-per-capita-in-selected-global-regions/\" target=\"_blank\">https://www.statista.com/statistics/256413/gross-domestic-product-per-capita-in-selected-global-regions/</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+</section> <!-- End of References Section -->
+</section>
+</div>
+</section>
+</section>
+</section>
+")
+```
