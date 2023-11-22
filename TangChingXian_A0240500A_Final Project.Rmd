@@ -1,0 +1,284 @@
+---
+title: "Final Project"
+author: "Tang Ching Xian"
+date: "2023-11-21"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This R Markdown document is made interactive using Shiny. Unlike the more traditional workflow of creating static reports, you can now create documents that allow your readers to change the assumptions underlying your analysis and see the results immediately. 
+
+To learn more, see [Interactive Documents](http://rmarkdown.rstudio.com/authoring_shiny.html).
+
+## Inputs and Outputs
+
+You can embed Shiny inputs and outputs in your document. Outputs are automatically updated whenever inputs change.  This demonstrates how a standard R plot can be made interactive by wrapping it in the Shiny `renderPlot` function. The `selectInput` and `sliderInput` functions create the input widgets used to drive the plot.
+
+```{r eruptions, echo=FALSE}
+inputPanel(
+  selectInput("n_breaks", label = "Number of bins:",
+              choices = c(10, 20, 35, 50), selected = 20),
+  
+  sliderInput("bw_adjust", label = "Bandwidth adjustment:",
+              min = 0.2, max = 2, value = 1, step = 0.2)
+)
+
+renderPlot({
+  hist(faithful$eruptions, probability = TRUE, breaks = as.numeric(input$n_breaks),
+       xlab = "Duration (minutes)", main = "Geyser eruption duration")
+  
+  dens <- density(faithful$eruptions, adjust = input$bw_adjust)
+  lines(dens, col = "blue")
+})
+```
+
+## Embedded Application
+
+It's also possible to embed an entire Shiny application within an R Markdown document using the `shinyAppDir` function. This example embeds a Shiny application located in another directory:
+
+```{r tabsets, echo=FALSE}
+shinyAppDir(
+  system.file("examples/06_tabsets", package = "shiny"),
+  options = list(
+    width = "100%", height = 550
+  )
+)
+```
+
+Note the use of the `height` parameter to determine how much vertical space the embedded application should occupy.
+
+You can also use the `shinyApp` function to define an application inline rather then in an external directory.
+
+In all of R code chunks above the `echo = FALSE` attribute is used. This is to prevent the R code within the chunk from rendering in the document alongside the Shiny components.
+
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(highcharter)
+library(gt)
+library(htmltools)
+library(viridis)
+library(maps)
+library(sf)
+```
+
+```{r}
+## Libraries 
+library(tidyverse)
+library(maps)
+library(sf)
+
+
+createInteractiveMap <- function(data_file, map_resolution = "world") {
+  library(ggplot2)
+  library(dplyr)
+  library(plotly)
+
+  # Import the data with coordinates
+  world_map <- map_data(map_resolution)
+  accesstonet <- read.csv(data_file)
+  map_data <- accesstonet %>% rename(region = country)
+
+  map <- left_join(world_map, map_data, by = "region")
+
+  # Create the ggplot object
+  gg <- ggplot(map, aes(long, lat, group = group, text = paste("Country: ", region, "<br>Annual Kg per Capita: ", FoodWaste2021kgcapitayear))) +
+    geom_polygon(aes(fill = FoodWaste2021kgcapitayear), color = "white", size = 0.03) +
+    scale_fill_gradient(low = "lightgreen", high = "darkgreen") +
+    theme_minimal()
+
+  # Convert ggplot to plotly
+  map_plotly <- ggplotly(gg, tooltip = "text")
+
+  # Display the interactive map
+  return(map_plotly)
+}
+
+# Usage
+interactiveMap <- createInteractiveMap("food-waste-by-country-2023.csv")
+interactiveMap
+
+
+```
+=================================================================================
+
+
+-----------------------------------------------------------------------
+
+### Dataset
+
+```{r}
+# Libraries
+library (tidyverse)
+library (plotly)
+library (shiny)
+library(dplyr)
+
+# Reading the CSV files
+waste_03_22 <- read.csv('2003_2022_waste.csv')
+
+energy_stat <- read.csv('waste_energy_stat.csv')
+
+
+# Renaming columns and mutating the data to convert values from kilo-tonnes to tonnes
+clean_waste_03_22 <- waste_03_22 %>%
+  rename(
+    waste_type = "waste_type",
+    total_waste_generated_tonne = "total_generate_1k_tonnes",
+    total_waste_recycled_tonne = "total_recycled_1k_tonnes",
+    total_waste_not_recycled_tonne = "total_not_recycled_1k_tonnes",
+    year = "year"
+  ) %>%
+  mutate(
+    total_waste_generated_tonne = total_waste_generated_tonne * 1000,
+    total_waste_recycled_tonne = total_waste_recycled_tonne * 1000
+  )
+
+# Filtering waste_03_22 dataset for specific years and waste types
+wasteselected <- clean_waste_03_22 %>%
+  filter(year %in% 2003:2022,
+         waste_type %in% c("Plastics", "Ferrous Metals", "Non-Ferrous Metals", "Glass", "Food"))%>%
+  arrange(waste_type)
+
+  
+### Calculating and adding recycling rate into DataFrame for analysis.
+
+# Calculate recycling_rate and round to 2 decimal places
+clean_waste_03_22$recycling_rate <- round(
+  clean_waste_03_22$total_waste_recycled_tonne / clean_waste_03_22$total_waste_generated_tonne,2
+)
+
+### Calculating and adding wasting rate into DataFrame for analysis.
+
+# Calculate wasting_rate and round to 2 decimal places
+clean_waste_03_22$wasting_rate <- round(
+  1-clean_waste_03_22$recycling_rate,2
+)
+
+# Display the cleaned data
+clean_waste_03_22
+
+
+
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+# Colors
+custom_colors <- viridis::mako(n=30)
+
+# Grouping by material and summarizing total waste and recycled
+summary_df <- clean_waste_03_22 %>%
+  group_by(waste_type) %>%
+  summarise(
+    total_waste_generated = sum(total_waste_generated_tonne),
+    total_waste_recycled = sum(total_waste_recycled_tonne)
+  ) %>%
+  arrange(desc(total_waste_generated))
+
+# Adding relevant headings
+colnames(summary_df) <- c("Material", "Total Waste Generated (tonnes)", "Total Waste Recycled (tonnes)")
+
+# Displaying the summarized data
+summary_df
+
+# Adapted code for waste data
+clean_waste_03_22 %>%
+  group_by(waste_type) %>%
+  summarise(
+    total_waste_generated = sum(total_waste_generated_tonne),
+    total_waste_recycled = sum(total_waste_recycled_tonne)
+  ) %>%
+  arrange(desc(total_waste_generated)) %>%
+  head(15) 
+
+```
+
+### Chart C
+
+```{r}
+# Bar Plot for Waste Generated and Waste Recycled
+fig <- plot_ly(
+  x = clean_waste_03_22$year,
+  y = clean_waste_03_22$total_waste_generated_tonne,
+  type = "bar",
+  name = "Waste Generated"
+) %>%
+  add_trace(
+    x = clean_waste_03_22$year,
+    y = clean_waste_03_22$total_waste_recycled_tonne,
+    type = "bar",
+    name = "Waste Recycled"
+  ) %>%
+  add_trace(
+    x = clean_waste_03_22$year,
+    y = clean_waste_03_22$total_waste_not_recycled_tonne,
+    type = "bar",
+    name = "Waste Not Recycled"
+  )
+
+fig
+```
+
+### Chart D
+
+```{r}
+#use merge function: 
+total_data <- merge(clean_waste_03_22, energy_stat, by.x = "waste_type", by.y = "Material", all.x = TRUE)
+total_data$energy_saved <- total_data$total_waste_not_recycled_tonne * as.numeric(energy_stat$energy_saved)
+total_data$crude_oil_saved <- total_data$total_waste_not_recycled_tonne * as.numeric(energy_stat$crude_oil_saved)
+
+# Display the first few rows
+head(total_data)
+
+# Box plot of total_waste_not_recycled_tonne
+fig <- plot_ly(total_data, x = ~year, y = ~total_waste_recycled_tonne, type = "box")
+fig <- fig %>% layout(title = "Box Plot of Total Waste Not Recycled Tonne", yaxis = list(title = "Total Waste Not Recycled Tonne"))
+
+fig
+
+# Box plot of total_energy_saved
+fig2 <- plot_ly(total_data, x = ~year, y = ~energy_saved, type = "box")
+fig2 <- fig %>% layout(title = "Box Plot of Total Energy Saved", yaxis = list(title = "Total Energy Saved"))
+
+fig2
+```
+=======================================================================
+### Chart E
+
+#```{r}
+#scatter plot graph
+fig <- plot_ly(
+  data = total_data,
+  x = ~year,
+  y = ~energy_saved,
+  size = ~total_waste_generate_tonne,
+  color = ~material,
+  sizes = c(10, 60),
+  type = "scatter",
+  mode = "markers"
+)
+
+fig
+
+
+# Energy saved per year
+annual_energy_savings <- total_data %>%
+  group_by(year) %>%
+  summarize(energy_saved = sum(energy_saved))
+
+# Convert total_energy_saved to GWh
+annual_energy_savings$total_energy_saved <- round(annual_energy_savings$energy_saved / 1000000, 2)
+
+# Display the result
+tail(annual_energy_savings)
+```
