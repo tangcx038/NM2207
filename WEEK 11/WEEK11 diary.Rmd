@@ -9,114 +9,95 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
     Global Food Waste Overview (Map):
-        Visualization: Map
-        Interaction: Plotly,Hover around the map to explore data.
+        Visualization: Interactive map (Map, ggplot, Plotly)
+        Interaction: Hover around the map to explore data.
 
     Greenhouse Gas Emissions by World (Map):
-        Visualization: Interactive map (Plotly)
+        Visualization: Interactive map (Map, ggplot, Plotly, viridis)
         Interaction: Click on specific countries to view detailed information (Note: Limited time and technical difficulties hindered full interactivity).
 
     Greenhouse Gas Emissions by Country (Graph):
-        Visualization: Interactive graph
+        Visualization: Interactive graph (ggplot, viridis)
         Interaction: Users can see the percentage of greenhouse gas emissions for specific countries.
 
     Food Factories Trend in Singapore (Line Chart):
-        Visualization: Line Chart
+        Visualization: Line Chart (plotly)
         Interaction: Implement hover effects to display information about each data point, including the amount of waste generated, recycled, and not recycled.
 
     Amount of Waste Generated, Recycled, and Not Recycled (Interactive Charts):
-        Visualization: Interactive Charts
+        Visualization: Interactive Charts (shiny)
         Interaction: Utilize Shiny to create dynamic filters based on different categories, such as material types.
 
     Recycling and Wasting Rates in Singapore (Interactive Charts):
-        Visualization: Interactive Charts
+        Visualization: Interactive Charts (shiny)
         Interaction: Use Shiny to create dynamic filters, enabling users to explore recycling and wasting rates based on different categories, such as material types.
 
     Total Energy Saved from Waste Disposed Instead of Recycling (Doughnut Chart):
-        Visualization: Doughnut Chart
-        Interaction: Interactive when hovering over each material type.
+        Visualization: Doughnut Chart (plotly)
+        Interaction: Interactive when hovering over each material type. Wanted to try hchart.
 
     Scatter Graph of Total Energy Saved by Year:
-        Visualization: Scatter Graph
+        Visualization: Scatter Graph (sqldf, plotly)
         Interaction: Based on data to calculate the total amount of energy saved by years.
 
     Total Population vs. Total Waste (Scatter Graph):
-        Visualization: Scatter Graph
+        Visualization: Scatter Graph (sqldf, plotly)
         Interaction: Develop a Shiny app that allows users to interactively explore the scatter graph by adjusting population size ranges. Include dynamic labels or annotations to highlight countries with notable population size and food waste relationships.
 
 (3) Concepts Incorporated and Source of Learning
 
 Taught Concepts:
-
-    ggplot:
-        
+   
+    ggplot2:
 
     Shiny:
         
-
     Markdown:
-        
-
+      
     Tidyverse:
         
-
 Libraries Used:
     
     ggplot2:
         youtube 
-    
-    flexdashboard:
-        youtube
-        
+
     highcharter:
         youtube, CRAN https://cran.r-project.org, https://jkunst.com/highcharter/reference/index.html
         
-    gt:
-        youtube, 
-        
     htmltools:
-        youtube, 
+        youtube, https://cran.r-project.org/web/packages/htmltools/index.html
         
     viridis:
-        youtube, 
+        youtube, https://www.rdocumentation.org/packages/viridisLite/versions/0.4.2/topics/viridis
         
     maps:
-        youtube, 
+        youtube, https://r.geocompx.org/adv-map.html
         
     sf:
-        youtube, 
+        youtube, https://r-spatial.github.io/sf/reference/index.html
         
     dplyr:
-        youtube, 
+        youtube, https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html
         
-    plotly:
-        youtube, 
+    plotly: 
+        youtube, https://plotly.com/r/
         
     quarto:
-        youtube, 
-        
-    RColorBrewer:
-        youtube, 
-        
+        youtube, https://quarto.org/docs/get-started/computations/rstudio.html
+
     ggiraph:
-        youtube, 
-        
-    readr:
-        youtube, 
-        
-    knitr:
-        youtube, 
-        
+        youtube, http://davidgohel.github.io/ggiraph/
+
     sqldf:
-        youtube, 
+        youtube, https://cran.r-project.org/web/packages/sqldf/sqldf.pdf
         
     htmlwidgets:
-        youtube, 
+        youtube, https://cran.r-project.org/web/packages/htmlwidgets/htmlwidgets.pdf
       
 
-Explanation:
+All in all:
 
     ggplot2, Shiny, Markdown, and Tidyverse were covered in the course and applied to create visualizations and interactive features.
     Interactive chart concepts were taught in Week 6, contributing to the dynamic exploration of data.Further exploration through github and youtube.
-    Web development skills, such as creating a dynamic webpage, were self-learnt from youtube, different websites such as hostiger, github, etc during the project.
+    Web development skills, such as creating a dynamic webpage, were self-learnt from youtube, different websites such as cran.r-project website, hostiger, github, etc during the project.
     
