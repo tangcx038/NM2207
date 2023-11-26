@@ -1,0 +1,60 @@
+---
+title: "No Time to Waste: Food loss and waste must be reduced for greater food security and environmental sustainability. Turn Food Waste into Resourceful waste!"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(shiny)
+library(flexdashboard)
+library(tidyverse)
+library(highcharter)
+library(gt)
+library(htmltools)
+library(viridis)
+library(maps)
+library(sf)
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library(quarto)
+library(RColorBrewer)
+library(ggiraph)
+library(readr)
+library(knitr)
+library(sqldf)
+library (shiny)
+
+```
+
+```{r}
+# Load the necessary libraries
+library(plotly)
+
+# Read the CSV file
+data <- read.csv('energy_saved_stat.csv')
+
+# Create an interactive doughnut chart
+plot <- plot_ly(data, 
+                labels = ~waste_type, 
+                values = ~total_energy_saved2,
+                type = 'pie',
+                hole = 0.4,  # Set the size of the hole for a doughnut effect
+                textinfo = 'label+percent',
+                hoverinfo = 'text+value',
+                text = ~paste("Material: ", waste_type, "<br>Energy Saved: ", total_energy_saved2)) %>%
+  layout(title = "Total Energy Saved From Waste Disposed Instead of Recycling",
+         annotations = list(text = "Possible Energy Saved ",
+                            showarrow = FALSE,
+                            x = 0.5,
+                            y = 0.5,
+                            xref = "paper",
+                            yref = "paper"))
+
+# Display the plot
+plot
+```    
+
+

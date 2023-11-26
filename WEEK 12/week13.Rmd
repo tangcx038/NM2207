@@ -47,6 +47,11 @@ library(shiny)
 ```
 
 ```{r}
+
+
+```
+
+```{r}
 # Libraries
 library(tidyverse)
 library(maps)
@@ -228,6 +233,47 @@ server <- function(input, output) {
 shinyApp(ui, server)
 ```
 
+###Top 5 countries and Bottom 5 countries with combined per capita food waste
+```{r setup, include=FALSE}
+library(ggplot2)
+library(stringr)
+library(grid)
+library(ggchicklet)
+
+FWD <- read.csv("FWD.csv")
+
+# Order the data by combined_estimate_kpcpy in descending order
+topCountries <- FWD[order(-FWD$combined_estimate_kpcpy), ]
+
+# Select the top 5 countries
+top5Countries <- topCountries[1:5, ]
+
+ggplot(top5Countries, aes(x = reorder(country, combined_estimate_kpcpy), y = combined_estimate_kpcpy)) +
+  geom_chicklet(radius = grid::unit(2, 'mm'), fill = "#d62023") +
+  geom_text(aes(label = combined_estimate_kpcpy), hjust = 1.8, vjust = 0.5, size = 3, colour = "white", fontface = "bold") +  
+  labs(title = str_wrap("The 5 Countries with Highest Combined Per-Capita Food Waste", width = 40),
+       subtitle = "Per-Capita Food Waste (kg/year)",
+       x = "", y = "Per-Capita Food Waste (kg/year)") +
+  remove_background_theme() +
+  coord_flip() +
+  theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold", margin = margin(b = 20, l = 20, r = 20)),
+        plot.subtitle = element_text(hjust = 0.5, size = 14)) 
+
+# Select the bottom 5 countries
+bottom5Countries <- topCountries[(nrow(topCountries)-4):nrow(topCountries), ]
+
+# Show the 5 countries with the lowest combined per-capita food waste
+ggplot(bottom5Countries, aes(x = reorder(country, combined_estimate_kpcpy), y = combined_estimate_kpcpy)) +
+  geom_chicklet(radius = grid::unit(2, 'mm'), fill = "#3fb619") +
+  geom_text(aes(label = combined_estimate_kpcpy), hjust = 1.8, vjust = 0.5, size = 3, colour = "white", fontface = "bold") +
+  labs(title = str_wrap("The 5 Countries with Lowest Combined Per-Capita Food Waste", width = 40),
+       x = "", y = "Per-Capita Food Waste (kg/year)") +
+  remove_background_theme() +
+  coord_flip() +
+  theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold", margin = margin(b = 20, l = 20, r = 20)))
+
+```
+
 ```{r}
 # Load necessary libraries
 library(readr)
@@ -282,11 +328,6 @@ The chart shows that households are the largest contributors to food waste, acco
 ### Dataset
 
 ```{r}
-# Libraries
-library (tidyverse)
-library (plotly)
-library (shiny)
-library(dplyr)
 
 # Reading the CSV files
 waste_03_22 <- read.csv('2003_2022_waste.csv')
@@ -336,9 +377,6 @@ head(clean_waste_03_22)
 
 ```{r}
 # Libraries
-library(tidyverse)
-library(shiny)
-library(plotly)
 
 # Reading the CSV files
 waste_03_22 <- read.csv('2003_2022_waste.csv')
@@ -399,10 +437,6 @@ server <- function(input, output) {
 shinyApp(ui, server)
 ```
 ```{r}
-# Libraries
-library(tidyverse)
-library(shiny)
-library(plotly)
 
 # Reading the CSV files
 waste_03_22 <- read.csv('2003_2022_waste.csv')
@@ -479,8 +513,6 @@ server <- function(input, output) {
   })
 }
 
-# Run the Shiny app
-shinyApp(ui, server)
 ```
 
 
@@ -589,6 +621,80 @@ fig2
 ### Chart E
 
 ```{r}
+first_5_rows <- head(clean_waste_03_22, 5) %>% select(waste_type, generated_tonnes)
+
+grouped_sum <- clean_waste_03_22 %>%
+  slice(6:14) %>%
+  summarise(waste_type = "Others", generated_tonnes = sum(generated_tonnes))
+
+final_result <- bind_rows(first_5_rows, grouped_sum)
+
+highchart() %>%
+  hc_chart(type = "pie") %>%
+  hc_add_series(final_result, "pie", hcaes(y = "generated_tonnes", name = "waste_type", color = "waste_type"), center = c(50, 50), 
+                innerSize="50%") %>% 
+  hc_tooltip(
+    pointFormat = "<b>{point.name}</b>: {point.y} tonnes/year ({point.percentage:.1f}%)"
+  ) %>%  hc_plotOptions(
+    pie = list(
+      dataLabels = list(
+        enabled = TRUE,
+        format = "<b>{point.name}</b>:<br>({point.percentage:.1f}%)",
+        style = list(fontSize = "10px", fontWeight = "bold")
+      )
+    ),
+    showInLegend = TRUE
+  ) %>% 
+  hc_title(text = "Total Generated Waste by Type in Singapore") %>%
+  hc_legend(enabled = TRUE) %>%
+  hc_subtitle(text = "Total Food Waste (Tonnes/Year)")
+
+```
+
+```{r}
+# Assuming 'recycling_rate' is the column in clean_waste_03_22 containing recycling rates
+first_5_rows <- head(clean_waste_03_22, 5) %>% select(waste_type, generated_tonnes, recycling_rate)
+
+grouped_sum <- clean_waste_03_22 %>%
+  slice(6:14) %>%
+  summarise(waste_type = "Others", 
+            generated_tonnes = sum(generated_tonnes),
+            recycling_rate = mean(recycling_rate))
+
+final_result <- bind_rows(first_5_rows, grouped_sum)
+
+highchart() %>%
+  hc_chart(type = "pie") %>%
+  hc_add_series(final_result, "pie", 
+                hcaes(y = "generated_tonnes", name = "waste_type", color = "waste_type"), 
+                center = c(50, 50), 
+                innerSize="50%") %>% 
+  hc_tooltip(
+    pointFormat = "<b>{point.name}</b>: {point.y} tonnes/year ({point.percentage:.1f}%)<br>Recycling Rate: {point.recycling_rate}%"
+  ) %>%  
+  hc_plotOptions(
+    pie = list(
+      dataLabels = list(
+        enabled = TRUE,
+        format = "<b>{point.name}</b>:<br>({point.percentage:.1f}%)",
+        style = list(fontSize = "10px", fontWeight = "bold")
+      )
+    ),
+    showInLegend = TRUE
+  ) %>% 
+  hc_title(text = "Total Generated Waste by Type in Singapore") %>%
+  hc_legend(enabled = TRUE) %>%
+  hc_subtitle(text = "Total Food Waste (Tonnes/Year) and Recycling Rate")
+```
+
+
+As per information from the National Environment Agency (NEA) (n.d.), Singapore produced a staggering 763,000 tonnes of food waste in 2022, constituting 11% of the total waste generated. This quantity has exhibited a consistent rise over the years, and the trend is anticipated to persist with the ongoing expansion of the population and economy. Moreover, our discussion has revealed that the recycling rate for food waste is notably low, further emphasizing the significant contribution of food waste to the overall waste scenario in Singapore.
+
+### Chart F
+
+
+
+```{r}
 #scatter plot graph
 #use merge function: 
 total_data <- merge(clean_waste_03_22, energy_stat, by.x = "waste_type", by.y = "Material", all.x = TRUE)
@@ -666,3 +772,5 @@ cat("
 </section>
 ")
 ```
+
+

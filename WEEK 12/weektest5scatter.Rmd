@@ -1,0 +1,60 @@
+---
+title: "No Time to Waste: Food loss and waste must be reduced for greater food security and environmental sustainability. Turn Food Waste into Resourceful waste!"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(shiny)
+library(flexdashboard)
+library(tidyverse)
+library(highcharter)
+library(gt)
+library(htmltools)
+library(viridis)
+library(maps)
+library(sf)
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library(quarto)
+library(RColorBrewer)
+library(ggiraph)
+library(readr)
+library(knitr)
+library(sqldf)
+library (shiny)
+
+```
+
+### Chart D
+
+```{r}
+# Load the necessary libraries
+library(plotly)
+
+# Read the CSV file
+data <- read.csv('energy_saved_stat.csv')
+
+# Create an interactive scatter plot
+plot <- plot_ly(data, 
+                x = ~year, 
+                y = ~total_energy_saved, 
+                size = ~total_waste_recycled_tonnes,
+                color = ~waste_type,
+                text = ~paste("Material: ", waste_type, "<br>Year: ", year, "<br>Total Waste Recycled: ", total_waste_recycled_tonnes, "<br>Total Energy Saved: ", total_energy_saved),
+                sizes = c(5, 100),  # Set the range of point sizes
+                marker = list(sizemode = 'diameter'),
+                hoverinfo = 'text') %>%
+  layout(title = "Interactive Scatter Plot of Total Energy Saved by Year",
+         xaxis = list(title = "Year"),
+         yaxis = list(title = "Total Energy Saved"))
+
+# Display the plot
+plot
+
+```
+
+

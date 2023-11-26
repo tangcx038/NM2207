@@ -1,0 +1,35 @@
+---
+title: "Interactive World Map with Food Emissions"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(leaflet)
+library(sf)
+```
+
+```{r}
+# Read the CSV file
+emissions_data <- read.csv("emissions-from-food-country.csv")
+
+# Read the shapefile or geojson file containing the geometry needed for polygons
+# Replace "shapefile_path" with the actual path to your shapefile or geojson file
+shape_data <- st_read("shapefile_path")
+
+# Merge emissions data with shape data
+merged_data <- merge(shape_data, emissions_data, by.x = "common_column", by.y = "common_column")
+
+# Create a leaflet map
+leaflet(data = merged_data) %>%
+  addTiles() %>%
+  setView(lng = 0, lat = 30, zoom = 2) %>%
+  addPolygons(fillColor = ~colorQuantile("YlOrRd", Food_emissions_by_country),
+              fillOpacity = 0.7,
+              color = "#BDBDC3",
+              weight = 1,
+              popup = ~paste("Country: ", Country, "<br>",
+                             "Emissions: ", Food_emissions_by_country, " units"))
+
+
+```

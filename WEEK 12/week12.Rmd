@@ -123,7 +123,7 @@ interactiveMap <- createInteractiveMap("food-waste-by-country-2023.csv")
 interactiveMap
 ```
 
-```{r}
+
 # Load necessary libraries
 library(readr)
 library(ggplot2)
@@ -172,7 +172,7 @@ print(pie_chart)
 ```
 
 -----------------------------------------------------------------------
-```{r}
+
 # Libraries
 library(tidyverse)
 library(maps)
@@ -503,7 +503,7 @@ fig
 
 ```{r}
 #use merge function: 
-total_data <- merge(clean_waste_03_22, energy_stat, by.x = "waste_type", by.y = "Material", all.x = TRUE)
+total_data <- merge(clean_waste_03_22, energy_stat, by.x = "waste_type", by.y = "material", all.x = TRUE)
 total_data$energy_saved <- total_data$total_waste_not_recycled_tonne * as.numeric(energy_stat$energy_saved)
 total_data$crude_oil_saved <- total_data$total_waste_not_recycled_tonne * as.numeric(energy_stat$crude_oil_saved)
 

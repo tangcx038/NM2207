@@ -1,0 +1,93 @@
+---
+title: "No Time to Waste: Food loss and waste must be reduced for greater food security and environmental sustainability. Turn Food Waste into Resourceful waste!"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(shiny)
+library(flexdashboard)
+library(tidyverse)
+library(highcharter)
+library(gt)
+library(htmltools)
+library(viridis)
+library(maps)
+library(sf)
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library(quarto)
+library(RColorBrewer)
+library(ggiraph)
+library(readr)
+library(knitr)
+library(sqldf)
+library (shiny)
+
+```
+
+```{r}
+# Libraries
+library (tidyverse)
+library (plotly)
+library (shiny)
+library(dplyr)
+
+# Reading the CSV files
+waste_03_22 <- read.csv('2003_2022_waste.csv')
+
+energy_stat <- read.csv('waste_energy_stat.csv')
+
+
+# Renaming columns and mutating the data to convert values from kilo-tonnes to tonnes
+clean_waste_03_22 <- waste_03_22 %>%
+  rename(
+    waste_type = "waste_type",
+    total_waste_generated_tonne = "total_generate_1k_tonnes",
+    total_waste_recycled_tonne = "total_recycled_1k_tonnes",
+    total_waste_not_recycled_tonne = "total_not_recycled_1k_tonnes",
+    year = "year"
+  ) %>%
+  mutate(
+    total_waste_generated_tonne = total_waste_generated_tonne * 1000,
+    total_waste_recycled_tonne = total_waste_recycled_tonne * 1000
+  )
+
+# Filtering waste_03_22 dataset for specific years and waste types
+wasteselected <- clean_waste_03_22 %>%
+  filter(year %in% 2003:2022,
+         waste_type %in% c("Plastics", "Ferrous Metals", "Non-Ferrous Metals", "Glass", "Food"))%>%
+  arrange(waste_type)
+
+  
+### Calculating and adding recycling rate into DataFrame for analysis.
+
+# Calculate recycling_rate and round to 2 decimal places
+clean_waste_03_22$recycling_rate <- round(
+  clean_waste_03_22$total_waste_recycled_tonne / clean_waste_03_22$total_waste_generated_tonne,2
+)
+
+```
+
+
+
+### Chart D
+
+```{r}
+#use merge function: 
+total_data <- merge(clean_waste_03_22, energy_stat, by.x = "waste_type", by.y = "material", all.x = TRUE)
+total_data$energy_saved <- total_data$total_waste_not_recycled_tonne * as.numeric(energy_stat$energy_saved)
+total_data$crude_oil_saved <- total_data$total_waste_not_recycled_tonne * as.numeric(energy_stat$crude_oil_saved)
+
+
+# Box plot of total_waste_not_recycled_tonne
+fig <- plot_ly(total_data, x = ~year, y = ~total_waste_not_recycled_tonne, type = "box")
+fig <- fig %>% layout(title = "Box Plot of Total Waste Not Recycled Tonne", yaxis = list(title = "Total Waste Not Recycled Tonne"))
+
+fig
+```
+
+
