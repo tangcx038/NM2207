@@ -1,0 +1,61 @@
+---
+title: "Ching's Week-13 diary on Webpage"
+author: "Tang Ching Xian"
+date: "2023-11-24"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+(1) Theme of the Data Story:
+The theme of this data story revolves around the severity of food waste globally and, more specifically, in Singapore. It explores the environmental, economic, and social implications of wasting food and emphasizes the importance of addressing this issue for a more sustainable and energy-efficient future.
+
+(2) Importance of Addressing the Question:
+It is crucial to address the question of food waste because of its multifaceted impact. Not only does it lead to the squandering of valuable resources, but it also has environmental consequences, contributes to economic losses, and plays a role in global warming. By understanding the scale of food waste and its various dimensions, we can work towards more sustainable practices and create awareness about the need for responsible consumption.
+
+(3) Relevance of Curated Data Sources:
+The data sources curated provide a comprehensive view of the global scenario, highlighting statistics from the United Nations’ Food and Agricultural Organisation and insights into greenhouse gas emissions. Moreover, the focus on Singapore's food industry and waste management practices offers a localized perspective. The inclusion of data on recycling rates and innovative technologies, such as the anaerobic digester system, adds depth to understanding potential solutions.
+
+(4) Insights from the Data and Visualization:
+The data reveals alarming statistics about the amount of food wasted globally, its economic cost, and its contribution to greenhouse gas emissions. The visualizations include graphs depicting the increase in greenhouse gas emissions from food production in different countries. The graph on the number of food factories in Singapore over the years raises concerns about potential food surplus and waste. Interactive charts showcase recycling rates, with a focus on food and plastics, highlighting areas that need improvement. The anaerobic digester system is presented as an innovative solution, providing insights into its energy and fertilizer production.
+
+(5) Implementation of the Project and New Concepts Learned:
+The project is implemented by gathering data from reputable sources, presenting it in a visually engaging manner, and drawing meaningful insights. The incorporation of interactive features in charts adds a layer of exploration for users. The concept of the anaerobic digester system and its role in transforming food waste into energy and fertilizers introduces a new and innovative solution to the issue of food waste. Additionally, the scatter graph with an r^2 regression coefficient demonstrates the correlation between a nation's food waste and its population size, showcasing the impact of demographic factors on food waste.
+
+In conclusion, the data story weaves together global and local perspectives, emphasizing the need for collective efforts to address food waste and promote sustainable practices. It encourages individuals to take responsibility and contribute to reducing food waste through recycling and mindful consumption for a more sustainable and energy-efficient future.
+
+
+Reference list:
+
+Food and Agriculture Organization. (n.d.). The State of Food and Agriculture - 2019. https://www.fao.org/state-of-food-agriculture/2019/en/
+
+Food and Agriculture Organization of the United Nations (FAO). (2011). Global food losses and food waste – Extent, causes and prevention. Rome. https://www.fao.org/3/mb060e/mb060e00.htm
+
+
+National Environment Agency (NEA). (n.d.). Waste Statistics and Overall Recycling .https://www.nea.gov.sg/our-services/waste-management/waste-statistics-and-overall-recycling
+
+Towards Zero Waste. (n.d.). Food Waste. https://www.towardszerowaste.gov.sg/foodwaste/
+
+United Nation Environment Programme (UNEP). (2021). UNEP Food Waste Index Report 2021.https://www.unep.org/resources/report/unep-food-waste-index-report-2021
+
+United Nation Environment Programme (UNEP). (2022, September 26). Why the global fight to tackle food waste has only just begun. https://www.unep.org/news-and-stories/story/why-global-fight-tackle-food-waste-has-only-just-begun
+
+Zheng, Z. (2019, May 16). Food waste worsens climate change more than plastics: Zero waste Scotland report. https://mothership.sg/2019/05/food-waste-worsens-climate-change-more- than-plastics-zero-waste-scotland-report/
+
+
+Data Sources:
+
+Arvidsson, J. (n.d.). Food Waste [Data set]. Kaggle. https://www.kaggle.com/datasets/joebeachcapital/food-waste
+
+National Environment Agency (NEA). (n.d.). Waste Statistics and Recycling Rate from 2003 to 2016 [Data set]. https://www.nea.gov.sg/docs/default-source/our-services/waste-management/wastestats-2003-20164197a3fd04d34770bafba09393d0fdf0.pdf
+
+National Environment Agency (NEA). (n.d.). Waste Statistics and Recycling Rate from 2017 to 2021 [Data set]. https://www.nea.gov.sg/docs/default-source/default-document-library/waste-and-recycling-statistics-2017-to-2021.pdf
+
+National Environment Agency (NEA). (n.d.). Waste Statistics and Recycling Rate for 2022 [Data set]. https://www.nea.gov.sg/our-services/waste-management/waste-statistics-and-overall-recycling
+
+
+Our World in Data. (2022, November 26). Waste Management. 
+https://ourworldindata.org/waste-management
+
