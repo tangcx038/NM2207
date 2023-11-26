@@ -1,0 +1,106 @@
+---
+title: "Ching's Week-12 diary on Webpage"
+author: "Tang Ching Xian"
+date: "2023-11-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Here are some issues when I encounter when cleaning the data 
+#Problem Encounter 1
+```{r}
+knitr::include_graphics("problem1.png")
+```
+
+Overcome: by typing separate lines instead of just throwing both at the same time.
+
+#Problem Encounter 2
+```{r}
+knitr::include_graphics("problem2.png")
+```
+Overcome: by typing "waste_energy_stat.csv" instead of "waste_energy_stat(s).csv" --> careless typing
+
+#Problem Encounter 3
+```{r}
+knitr::include_graphics("problem3.png")
+```
+Overcome: Confirm column names mentioned in the 'rename' and 'mutate' function exist in the CSV. They are also case-sensitive, so make sure there are no typos.
+
+#Problem Encounter 4
+```{r}
+knitr::include_graphics("problem4.png")
+```
+Overcome: Rearrange the data
+
+Sometimes, if the code has problem and due to limited time, I would manually edit the csv. 
+
+----
+
+Challenges on making the webpages better:
+
+
+There are many more, however, due to limietd time, I didn't document everything 
+
+But here are some of the error messages i get:
+
+ (1) 
+Error in `compute_layer()`:
+! `stat_sf()` requires the following missing aesthetics: geometry
+Backtrace:
+  1. plotly::ggplotly(map, tooltip = c("region", "Food_emissions_by_country"))
+  2. plotly:::ggplotly.ggplot(map, tooltip = c("region", "Food_emissions_by_country"))
+  3. plotly::gg2list(...)
+  4. plotly (local) ggplotly_build(p)
+  5. plotly (local) by_layer(function(l, d) l$compute_statistic(d, layout))
+     ...
+  8. ggplot2 (local) compute_statistic(..., self = self)
+  9. self$stat$compute_layer(data, self$computed_stat_params, layout)
+ 10. ggplot2 (local) compute_layer(..., self = self)
+ 11. ggproto_parent(Stat, self)$compute_layer(data, params, layout)
+ 12. ggplot2 (local) compute_layer(..., self = self)
+                                                                                                  
+Execution halted
+
+Solution: I tried using the ggplot2 library,  however, i get a followed up issue on [Error in `geom_polygon_interactive()`:! could not find function "geom_polygon_interactive"]. Tried "geom_polygon" line in the ggplot code with "geom_sf". However, I realised the geom_polygon_interactive function is not part of the standard ggplot2 package. 
+
+[Error:! `dsn` must point to a source, not an empty string.
+Backtrace:
+ 1. sf::st_read(system.file("shape/world", package = "maps"), quiet = TRUE)
+ 2. sf:::st_read.character(...)]
+ 
+ Then there seems there was an issue with attempting to read the shapefile from the maps package. Used the "rnaturalearth" package to obtain a simplified world map. Additionally, use the sf package to handle spatial data. It rendered, but no map is showing. 
+ 
+Then I tried plotly, but when I render, the render took 3 mins and still nothing appear, I concluded it hanged too cause i could not close the Rstudio. 
+
+In the end, I didn't managed to resolve this, as such my second world map does not have interactive elements.
+
+
+ (2) 
+Some of my graph and images are not 100% and centralised.
+
+Solution: At first, i used  theme() function and set the plot.margin parameter, however the graph did not change. I used {r, out.width='100%'} in the end to make it look better. 
+
+ (3) 
+ Sometimes I render, it works but most of the times, i render, this error message appear.
+ [Error in `add_html_caption()`:]
+ 
+ Solution: Apparently thorugh lots of googling and online conversations, I realised it was due to the unupdated "Quarto" package. 
+ 
+ (4) 
+ Some of mmy shiny app also ran into error when publishing onto the wenpage.
+[ Error in `checkAppLayout()`:
+! Project must not contain both 'app.R' and a single-file Shiny app.
+Backtrace:
+    ▆
+ 1. └─rsconnect::deployApp(...)
+ 2.   └─rsconnect:::appMetadata(...)
+ 3.     └─rsconnect:::checkAppLayout(appDir, appPrimaryDoc)
+ 4.       └─cli::cli_abort("Project must not contain both {.file app.R} and a single-file Shiny app.")
+ 5.         └─rlang::abort(...)
+Execution halted]
+
+
+Solution: Create a separate file and name of the second shiny document. 
+

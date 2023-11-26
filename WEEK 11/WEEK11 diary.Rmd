@@ -1,0 +1,122 @@
+---
+title: "Ching's Week-11 diary on Webpage"
+author: "Tang Ching Xian"
+date: "2023-11-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+    Global Food Waste Overview (Map):
+        Visualization: Map
+        Interaction: Plotly,Hover around the map to explore data.
+
+    Greenhouse Gas Emissions by World (Map):
+        Visualization: Interactive map (Plotly)
+        Interaction: Click on specific countries to view detailed information (Note: Limited time and technical difficulties hindered full interactivity).
+
+    Greenhouse Gas Emissions by Country (Graph):
+        Visualization: Interactive graph
+        Interaction: Users can see the percentage of greenhouse gas emissions for specific countries.
+
+    Food Factories Trend in Singapore (Line Chart):
+        Visualization: Line Chart
+        Interaction: Implement hover effects to display information about each data point, including the amount of waste generated, recycled, and not recycled.
+
+    Amount of Waste Generated, Recycled, and Not Recycled (Interactive Charts):
+        Visualization: Interactive Charts
+        Interaction: Utilize Shiny to create dynamic filters based on different categories, such as material types.
+
+    Recycling and Wasting Rates in Singapore (Interactive Charts):
+        Visualization: Interactive Charts
+        Interaction: Use Shiny to create dynamic filters, enabling users to explore recycling and wasting rates based on different categories, such as material types.
+
+    Total Energy Saved from Waste Disposed Instead of Recycling (Doughnut Chart):
+        Visualization: Doughnut Chart
+        Interaction: Interactive when hovering over each material type.
+
+    Scatter Graph of Total Energy Saved by Year:
+        Visualization: Scatter Graph
+        Interaction: Based on data to calculate the total amount of energy saved by years.
+
+    Total Population vs. Total Waste (Scatter Graph):
+        Visualization: Scatter Graph
+        Interaction: Develop a Shiny app that allows users to interactively explore the scatter graph by adjusting population size ranges. Include dynamic labels or annotations to highlight countries with notable population size and food waste relationships.
+
+(3) Concepts Incorporated and Source of Learning
+
+Taught Concepts:
+
+    ggplot:
+        
+
+    Shiny:
+        
+
+    Markdown:
+        
+
+    Tidyverse:
+        
+
+Libraries Used:
+    
+    ggplot2:
+        youtube 
+    
+    flexdashboard:
+        youtube
+        
+    highcharter:
+        youtube, CRAN https://cran.r-project.org, https://jkunst.com/highcharter/reference/index.html
+        
+    gt:
+        youtube, 
+        
+    htmltools:
+        youtube, 
+        
+    viridis:
+        youtube, 
+        
+    maps:
+        youtube, 
+        
+    sf:
+        youtube, 
+        
+    dplyr:
+        youtube, 
+        
+    plotly:
+        youtube, 
+        
+    quarto:
+        youtube, 
+        
+    RColorBrewer:
+        youtube, 
+        
+    ggiraph:
+        youtube, 
+        
+    readr:
+        youtube, 
+        
+    knitr:
+        youtube, 
+        
+    sqldf:
+        youtube, 
+        
+    htmlwidgets:
+        youtube, 
+      
+
+Explanation:
+
+    ggplot2, Shiny, Markdown, and Tidyverse were covered in the course and applied to create visualizations and interactive features.
+    Interactive chart concepts were taught in Week 6, contributing to the dynamic exploration of data.Further exploration through github and youtube.
+    Web development skills, such as creating a dynamic webpage, were self-learnt from youtube, different websites such as hostiger, github, etc during the project.
+    

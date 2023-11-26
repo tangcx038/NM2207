@@ -1,5 +1,5 @@
 ---
-title: "Ching's Amazing Week-9 Webpage"
+title: "Ching's Week-10 diary on Webpage"
 author: "Tang Ching Xian"
 date: "2023-10-15"
 output: html_document
@@ -39,58 +39,6 @@ The city-state, facing a shortage of land for waste facilities, responds with a 
 I will be using Recycling statistics to calculate energy saved every year from 2003 to 2022 based on 6 waste types: plastics, paper, glass, ferrous, non-ferrous metal and food.
 
 
-```{r, eval=T,echo=TRUE}
-# Libraries
-library (tidyverse)
-library (plotly)
-library (shiny)
-library(dplyr)
-
-# Reading the CSV files
-waste_03_22 <- read.csv('2003_2022_waste.csv')
-
-energy_stat <- read.csv('waste_energy_stat.csv')
-
-
-# Renaming columns and mutating the data to convert values from kilo-tonnes to tonnes
-clean_waste_03_22 <- waste_03_22 %>%
-  rename(
-    waste_type = "waste_type",
-    total_waste_generated_tonne = "total_generate_1k_tonnes",
-    total_waste_recycled_tonne = "total_recycled_1k_tonnes",
-    year = "year"
-  ) %>%
-  mutate(
-    total_waste_generated_tonne = total_waste_generated_tonne * 1000,
-    total_waste_recycled_tonne = total_waste_recycled_tonne * 1000
-  )
-```
-
-```{r, eval=T,echo=TRUE}
-
-# Filtering waste_03_22 dataset for specific years and waste types
-wasteselected <- clean_waste_03_22 %>%
-  filter(year %in% 2003:2022,
-         waste_type %in% c("Plastics", "Ferrous Metals", "Non-Ferrous Metals", "Glass", "Food"))%>%
-  arrange(waste_type)
-
-
-          #problem encountered: missing data for Food and Non-Ferrous Metals
-
-  
-### Calculating and adding recycling rate into DataFrame for analysis.
-
-# Calculate recycling_rate and round to 2 decimal places
-clean_waste_03_22$recycling_rate <- round(
-  clean_waste_03_22$total_waste_recycled_tonne / clean_waste_03_22$total_waste_generated_tonne,
-  2
-)
-
-# Display the cleaned data
-head(clean_waste_03_22)
-```
-
-
 #Problem Encounter 1
 ```{r}
 knitr::include_graphics("problem1.png")
@@ -114,7 +62,7 @@ Overcome: Confirm column names mentioned in the 'rename' and 'mutate' function e
 ```{r}
 knitr::include_graphics("problem4.png")
 ```
-Overcome: Rearrange the data?
+Overcome: Rearrange the data
 
 
 Overview of the Introduction of the webpage:

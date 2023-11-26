@@ -1,7 +1,7 @@
 ---
-title: "Ching's Amazing Week-9 Webpage"
+title: "Ching's Week-9 diary on Webpage"
 author: "Tang Ching Xian"
-date: "2023-10-15"
+date: "2023-10-18"
 output: html_document
 ---
 
