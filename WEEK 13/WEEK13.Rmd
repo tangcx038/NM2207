@@ -9,22 +9,15 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-(1) Theme of the Data Story:
-The theme of this data story revolves around the severity of food waste globally and, more specifically, in Singapore. It explores the environmental, economic, and social implications of wasting food and emphasizes the importance of addressing this issue for a more sustainable and energy-efficient future.
 
-(2) Importance of Addressing the Question:
-It is crucial to address the question of food waste because of its multifaceted impact. Not only does it lead to the squandering of valuable resources, but it also has environmental consequences, contributes to economic losses, and plays a role in global warming. By understanding the scale of food waste and its various dimensions, we can work towards more sustainable practices and create awareness about the need for responsible consumption.
+(1) Theme of the Data Story: The central theme of this data story revolves around the alarming global and local issue of food waste, emphasizing its severity both globally and specifically in Singapore. It delves into the environmental, economic, and social implications of wasting food, underscoring the critical importance of addressing this issue for the sake of a more sustainable and energy-efficient future.
+(2) Importance of Addressing the Question: Addressing the question of food waste is crucial due to its multifaceted impact. Not only does it result in the squandering of valuable resources, but it also has significant environmental consequences, contributes to economic losses, and plays a role in global warming (UNEP, 2021; FAO, 2011; Zheng, 2019). By comprehending the scale of food waste and its various dimensions, society can work towards adopting more sustainable practices and create awareness about the necessity for responsible consumption.
+(3) Relevance of Curated Data Sources: The curated data sources provide a comprehensive global perspective, utilizing statistics from reputable organizations like the United Nations’ Food and Agricultural Organisation (FAO, n.d.) and insights into greenhouse gas emissions (Crippa, 2021). The specific focus on Singapore's food industry and waste management practices adds a crucial localized perspective (NEA, n.d.). Additionally, the inclusion of data on recycling rates and innovative technologies, such as the anaerobic digester system, enriches the narrative by offering potential solutions to the complex issue of food waste (NEA, n.d.; Our World in Data, n.d.).
+(4) Insights from the Data and Visualization: The data uncovers alarming statistics about global food waste, its economic cost, and its substantial contribution to greenhouse gas emissions (FAO, 2011; Crippa, 2021). Visualizations, including graphs illustrating the increase in greenhouse gas emissions from food production globally and the growth in the number of food factories in Singapore, emphasize the gravity of the situation. Interactive charts further highlight areas for improvement, such as recycling rates, with a specific focus on food and plastics waste (NEA, n.d.). The anaerobic digester system is presented as an innovative and sustainable solution, providing insights into its energy and fertilizer production (NUS, n.d.).
+(5) Implementation of the Project and New Concepts Learned: The project is implemented by gathering data from reputable sources, such as Our World in Data (2022), and presenting it in a visually engaging manner to draw meaningful insights. The incorporation of interactive features in charts adds a layer of exploration for users, enhancing the engagement with the data. The concept of the anaerobic digester system introduces a new and innovative solution to the issue of food waste, demonstrating how technology can play a pivotal role in transforming waste into valuable resources (NEA, n.d.). Additionally, the scatter graph with an r^2 regression coefficient sheds light on the correlation between a nation’s food waste and its population size, emphasizing the influence of demographic factors on the issue (Our World in Data, 2022).
 
-(3) Relevance of Curated Data Sources:
-The data sources curated provide a comprehensive view of the global scenario, highlighting statistics from the United Nations’ Food and Agricultural Organisation and insights into greenhouse gas emissions. Moreover, the focus on Singapore's food industry and waste management practices offers a localized perspective. The inclusion of data on recycling rates and innovative technologies, such as the anaerobic digester system, adds depth to understanding potential solutions.
+In conclusion, the data story weaves together global and local perspectives, emphasizing the need for collective efforts to address food waste and promote sustainable practices. It encourages individuals to take responsibility and contribute to reducing food waste through recycling and mindful consumption, ultimately striving for a more sustainable and energy-efficient future.
 
-(4) Insights from the Data and Visualization:
-The data reveals alarming statistics about the amount of food wasted globally, its economic cost, and its contribution to greenhouse gas emissions. The visualizations include graphs depicting the increase in greenhouse gas emissions from food production in different countries. The graph on the number of food factories in Singapore over the years raises concerns about potential food surplus and waste. Interactive charts showcase recycling rates, with a focus on food and plastics, highlighting areas that need improvement. The anaerobic digester system is presented as an innovative solution, providing insights into its energy and fertilizer production.
-
-(5) Implementation of the Project and New Concepts Learned:
-The project is implemented by gathering data from reputable sources, presenting it in a visually engaging manner, and drawing meaningful insights. The incorporation of interactive features in charts adds a layer of exploration for users. The concept of the anaerobic digester system and its role in transforming food waste into energy and fertilizers introduces a new and innovative solution to the issue of food waste. Additionally, the scatter graph with an r^2 regression coefficient demonstrates the correlation between a nation's food waste and its population size, showcasing the impact of demographic factors on food waste.
-
-In conclusion, the data story weaves together global and local perspectives, emphasizing the need for collective efforts to address food waste and promote sustainable practices. It encourages individuals to take responsibility and contribute to reducing food waste through recycling and mindful consumption for a more sustainable and energy-efficient future.
 
 
 Reference list:
@@ -56,6 +49,7 @@ National Environment Agency (NEA). (n.d.). Waste Statistics and Recycling Rate f
 National Environment Agency (NEA). (n.d.). Waste Statistics and Recycling Rate for 2022 [Data set]. https://www.nea.gov.sg/our-services/waste-management/waste-statistics-and-overall-recycling
 
 
-Our World in Data. (2022, November 26). Waste Management. 
+Our World in Data. (n.d). Waste Management. 
 https://ourworldindata.org/waste-management
 
+National University of Singapore. (n.d). Food Waste to Resources. Retrieved from https://nus.edu.sg/neri/research-features/food-waste-to-resources/
